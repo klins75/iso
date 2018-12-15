@@ -17,14 +17,11 @@ let gridWidth = GRID_WIDTH*GRID_COLS*2;
 let gridCenterY = canvas.height/2;
 let gridCenterX = (canvas.width-gridWidth)/2;
 
-// IMAGES
-let house = new Image();
-house.src = 'house.png';
-
 // CLOCK
 let gameClock = performance.now();
 let deltaTime;
 
+// TRANSFORM FUNCTIONS
 function transform1(){
   ctx.transform(1, -.5, 1, .5, gridCenterX, gridCenterY);
 }
@@ -122,133 +119,8 @@ class CanvasIsometricMap {
   }
 }
 
-// ISOMETRIC MAP CLASS 'Z'
-class CanvasIsometricMapZ {
-  constructor(obstacleColor, safeColor, gridNo,dx,dy) {
-    this.obstacleColor = obstacleColor;
-    this.safeColor = safeColor;
-    this.gridNo = gridNo;
-    this.dx = dx;
-    this.dy = dy;
-    // BUILD THE MAP ARRAY (replaces grid0 constant)
-    this.load = function() {
-      for (let i=0; i<GRID_COLS; i++) {
-        this.gridNo[i] = (this.gridNo[i] || []);
-        for (let j=0; j<GRID_ROWS; j++) {
-          if(this.gridNo[i][j]=='obstacle'){}
-          else{this.gridNo[i][j] = 'safe'}
-        }
-      }
-    }
-    // DRAW MAP TO SCREEN
-    this.update = function() {
-      // underlayer for grid lines
-      drawIsometricRectangleZ(0,0,GRID_WIDTH*GRID_COLS,GRID_HEIGHT*GRID_ROWS,'rgb(180,180,0'),this.dx,this.dy;
-      // create grid array
-      for(let i=0; i < GRID_COLS; i++){
-        for(let j=0; j < GRID_ROWS; j++) {
-          if(this.gridNo[i][j] =='obstacle'){
-            drawIsometricRectangleZ([i]*GRID_WIDTH, [j]*GRID_HEIGHT, GRID_WIDTH-GRID_GAP, GRID_HEIGHT-GRID_GAP, this.obstacleColor, this.dx, this.dy);
-          } 
-          else /*(grid[i][j] == 'Safe')*/{
-            drawIsometricRectangleZ([i]*GRID_WIDTH, [j]*GRID_HEIGHT, GRID_WIDTH-GRID_GAP, GRID_HEIGHT-GRID_GAP, this.safeColor, this.dx, this.dy);
-          }          
-        }      
-      }
-    }
-    // CLEAR MAP (unused)
-    this.clear = function() {
-      // change this to a .forEach
-      for (let i=0; i<GRID_COLS; i++) {
-        this.gridNo[i] = (this.gridNo[i] || []);
-        for (let j=0; j<GRID_ROWS; j++) {
-          this.gridNo[i][j] = 'safe'
-        }
-      }
-    }
-  }
-}
-
-// REGULAR MAP CLASS
-class CanvasMap {
-  constructor(obstacleColor, safeColor, gridNo) {
-    this.obstacleColor = obstacleColor;
-    this.safeColor = safeColor;
-    this.gridNo = gridNo;
-    // BUILD THE MAP ARRAY (replaces grid0 constant)
-    this.load = function() {
-      for (let i=0; i<GRID_COLS; i++) {
-        this.gridNo[i] = (this.gridNo[i] || []);
-        for (let j=0; j<GRID_ROWS; j++) {
-          if(this.gridNo[i][j]=='obstacle'){}
-          else{this.gridNo[i][j] = 'safe'}
-        }
-      }
-    }
-    // DRAW MAP TO SCREEN
-    this.update = function() {
-      // underlayer for grid
-      drawRectangle(0,0,GRID_WIDTH*GRID_COLS,GRID_HEIGHT*GRID_ROWS,'black');
-      // create a grid array
-      for(let i=0; i < GRID_COLS; i++){
-        for(let j=0; j < GRID_ROWS; j++) {
-          if(this.gridNo[i][j] =='obstacle'){
-            drawRectangle([i]*GRID_WIDTH, [j]*GRID_HEIGHT, GRID_WIDTH-GRID_GAP, GRID_HEIGHT-GRID_GAP, this.obstacleColor);
-          } 
-          else /*(grid[i][j] == 'Safe')*/{
-            drawRectangle([i]*GRID_WIDTH, [j]*GRID_HEIGHT, GRID_WIDTH-GRID_GAP, GRID_HEIGHT-GRID_GAP, this.safeColor);
-          }          
-        }      
-      }
-    }
-    // CLEAR MAP (unused)
-    this.clear = function() {
-      // change this to a .forEach
-      for (let i=0; i<GRID_COLS; i++) {
-        this.gridNo[i] = (this.gridNo[i] || []);
-        for (let j=0; j<GRID_ROWS; j++) {
-          this.gridNo[i][j] = 'safe'
-        }
-      }
-    }
-  }
-  get top() {return GRID_HEIGHT*GRID_ROWS/2}
-}
-
 // CREATE ISOMETRIC MAP WITH UNDERLAYER
 let isometricGrid = new CanvasIsometricMap('gray','green', grid0);
-let isometricGridZ = new CanvasIsometricMapZ('gray', 'blue', grid0, 200, 0);
-
-// CREATE REGULAR MAP
-let grid = new CanvasMap('gray','rgba(255,255,0,.2)',grid0);
-
-// MOVING BLOCK CLASS
-class Block {
-  constructor(x,y){
-    this.x = x;
-    this.y = y;
-    this.vel = .1; // this should change when motion is applied
-    this.update = function(){
-      drawIsometricRectangle(this.x,this.y,GRID_WIDTH,GRID_HEIGHT,'blue');
-      this.x < 0 ? this.x = 0 : {};
-      this.x > gridWidth/2-GRID_WIDTH ? this.x = gridWidth/2-GRID_WIDTH : {};
-      this.y < 0 ? this.y = 0 : {};
-      this.y > gridHeight-GRID_HEIGHT ? this.y = gridHeight-GRID_HEIGHT : {};
-      if(canvas.keys && canvas.keys[39]){
-        this.x += 1*(deltaTime*this.vel);
-      }
-      if(canvas.keys && canvas.keys[37]){
-        this.x -= 1*(deltaTime*this.vel);
-      }
-      if(canvas.keys && canvas.keys[38]){
-        this.y -= 1*(deltaTime*this.vel);
-      }
-      if(canvas.keys && canvas.keys[40]){
-        this.y += 1*(deltaTime*this.vel);
-      }
-    }
-  }
-}
 
 // MOVING BLOCK CLASS Z
 class BlockZ {
@@ -281,11 +153,8 @@ class BlockZ {
   }
 }
 
-// CREATE MOVING BLOCK (floor part)
-let blockie = new Block(0,0);
-// CREATE MOVING BLOCK (upward left)
-let blockie2 = new BlockZ(0,0,0,0);
-let blockie3 = new BlockZ(0,0,0,0);
+// CREATE MOVING BLOCK
+let blockie = new BlockZ(0,0,0,0);
 
 // EVENT LISTENER FOR MOUSE COORDINATES
 canvas.addEventListener('mousemove', function(e){
@@ -307,10 +176,8 @@ document.addEventListener('keyup', function(e) {
 window.onload = function(){ 
   // CREATE CANVAS
   document.body.insertBefore(canvas, document.body.childNodes[0]); 
-  // CREATE GRIDS
-  // isometricGrid.load(); 
-  // isometricGridZ.load(); 
-  grid.load();
+  // CREATE GRID 
+  isometricGrid.load();
   // INITIATE DRAWING LOOP
   drawAll();
 }
@@ -322,19 +189,14 @@ function drawAll(){
   gameClockPrevious = gameClock;
   gameClock = performance.now();
   deltaTime = gameClock - gameClockPrevious;
-
   busy = true;
   // CLEAR PREVIOUS DRAW
   clear();
   // DRAW CANVAS BACKGROUND
   canvasBackground('black');
-  // UPDATE GRIDS
-  // grid.update(); //comparison grid shows isometric grid untransformed.
+  // UPDATE GRID
   isometricGrid.update();
-  // isometricGridZ.update();
-  // blockie.update();
-  // blockie2.update();
-  blockie3.update();
-  
+  // UPDATE MOVING OBJECT(S)
+  blockie.update();
 }
 
