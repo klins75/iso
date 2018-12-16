@@ -11,7 +11,7 @@ const GRID_WIDTH = 20;
 const GRID_HEIGHT = 20;
 const GRID_COLS = 20;
 const GRID_ROWS = 20;
-let GRID_GAP = 0;
+let GRID_GAP = 1;
 let gridHeight = GRID_HEIGHT*GRID_ROWS;
 let gridWidth = GRID_WIDTH*GRID_COLS*2;
 let gridCenterY = canvas.height/2;
@@ -35,9 +35,7 @@ function transform2(dx,dy){
 function transform3(dx,dy){
   ctx.transform(1, -1, 0, 1, dx, dy);
 }
-function transform4(dx,dy){
-  ctx.transform(1, -.5, 1, .5, dx, dy);
-}
+
 
 // DRAW INSTRUCTIONS FOR ISOMETRIC GRID SQUARES
 function drawIsometricRectangle(x,y,width,height,color){
@@ -126,7 +124,7 @@ class CanvasIsometricMap {
 }
 
 // CREATE ISOMETRIC MAP WITH UNDERLAYER
-let isometricGrid = new CanvasIsometricMap('gray','slategray', grid0);
+let isometricGrid = new CanvasIsometricMap('gray','green', grid0);
 
 // MOVING BLOCK CLASS Z
 class BlockZ {
@@ -204,36 +202,5 @@ function drawAll(){
   isometricGrid.update();
   // UPDATE MOVING OBJECT(S)
   blockie.update();
-  drawWallH(4,0,14,3,238,238,238,0,0);
-  drawWallH(4,4,14,3,238,238,238,80,0);
-  // drawWallH(4,7,18,3,238,238,238,140,0);
-  drawWallH(4,12,14,3,238,238,238,240,0);
-  drawWallH(4,16,14,3,238,238,238,320,0);
-
 }
 
-function drawWallH(x,y,width,height,red,green,blue,dx,dy){
-  // console.log(color);
-  drawIsometricRectangle(x*GRID_WIDTH,(y*GRID_HEIGHT-40),width*GRID_WIDTH,40,'rgba(0,0,0,.3)');
-  x *= GRID_WIDTH;
-  y *= GRID_HEIGHT;
-  width *= GRID_WIDTH;
-  height *= GRID_HEIGHT;
-  ctx.save();
-  ctx.fillStyle = `rgb(${red},${green},${blue})`;
-  transform1();
-  transform2(dx,dy);
-  ctx.fillRect(x,y+20,width,height*-1);
-  ctx.resetTransform();
-  transform1();
-  transform3(x,dy);
-  ctx.fillStyle = `rgb(${.5*red},${.5*green},${.5*blue})`;
-  ctx.fillRect(0,y,height,20);
-  ctx.fill();
-  ctx.fillStyle= `rgb(${.8*red},${.8*green},${.8*blue})`;
-  ctx.resetTransform();
-  transform4(x,dy+240);
-  ctx.fillRect(x,y,width,GRID_WIDTH);
-  ctx.restore();
-
-}
